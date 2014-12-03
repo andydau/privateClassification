@@ -1,0 +1,26 @@
+
+
+"*** YOUR TEXT HERE ***"
+
+
+Feature engineering
+-------------------
+
+1. For which dataset did you implement enhanced features (digits or spam or both)?
+The spam dataset
+
+
+
+2. What were your features?  (briefly describe)
+The features I have are the top occuring 500 words. If a document has that word, the feature is set to 1, otherwise it is 0.
+
+
+
+3. Which classifier performed the best?
+The perceptron classifier outperform the decisionTree (91.4% to 91.2%) even though the decisionTree achieves more accuracy in the training data (around 98% compare to around 94%). If we increase the number of features (the number of words considered) then perceptron clearly outperforms the decisionTree in the test cases. The recursion aspect of the decisionTree process also seems to hamper the speed of the procedure
+
+
+
+4. What features were most important?  (Your answer should match information
+   printed by the corresponding printDiagnostics method.)
+The most important feature after running the classifier decisionTree is the appearance of the word "our" in the email.
