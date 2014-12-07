@@ -58,9 +58,9 @@ class DecisionTreeClassifer(classificationMethod.ClassificationMethod):
             counter = util.Counter()
             for i in range(len(examples)):
                 counter[labels[i]]+=1
-            #if len(counter.keys())==1:
-            #    node = DecisionNode(parent,{},True,None,counter.argMax(),0.0)
-            #    return node
+            if len(counter.keys())==1:
+                node = DecisionNode(parent,{},True,None,counter.argMax(),0.0)
+                return node
             gain = 0
             splitFeature = features[0]
             entropy = 0

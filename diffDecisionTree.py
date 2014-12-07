@@ -6,6 +6,7 @@ import classificationMethod
 import math
 import util
 import numpy as np
+import pdb
 from numpy.random import random_sample
 
 class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
@@ -21,8 +22,9 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
         self.depth = max_depth 
         self.root = None       # training should replace this with root of decision tree!
         "*** YOUR CODE HERE ***"
+        self.allLabels = []
         self.values = {}
-        self.budget = 1000
+        self.budget = 30
         self.e = float(self.budget)/(2*(self.depth+1))
 
     def getNoisy(self, count):
@@ -43,16 +45,25 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
                 counter[trainingData[i][feature]]+=1
             for key in counter.keys():
                 self.values[feature].append(key)
+        counter = util.Counter()
+        for label in trainingLabels:
+            counter[label]+=1
+        self.allLabels = counter.sortedKeys()
         root = self.learn(trainingData,trainingLabels,features,None,None,None)
         self.root = root
 
     def getPlularity(self,examples,exampleLabels):
         counter = util.Counter()
+        if (examples==None):
+            probabilities = [1/float(len(self.allLabels))]*len(self.allLabels)
+            result = self.weighted_values(self.allLabels,probabilities)
+            return result
         for i in range(len(examples)):
             counter[exampleLabels[i]]+=1
         for key in counter.keys():
             counter[key] = self.getNoisy(counter[key])
-        return counter.argMax()
+        result = counter.argMax()
+        return result
 
     def weighted_values(self,values, probabilities):
         bins = np.add.accumulate(probabilities)
@@ -73,7 +84,7 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
                     if examples[i][feature]==key1:
                         split[labels[i]]+=1
                 tempEntropy = 0
-                print feature,split
+                #print feature,split
                 for key2 in split.keys():
                     temp = (float(split[key2])/(counter[key1]))
                     temp *= temp
@@ -101,7 +112,11 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
                 featureCount += 1;
             if featureCount > maxF:
                 maxF = featureCount
-        labelCount = len(labels)
+        labelCounter = util.Counter()
+        for label in labels:
+            labelCounter[label]+=1
+        #pdb.set_trace()
+        labelCount = len(labelCounter.sortedKeys())
         if (not examples) or (not features) or ((count/(maxF*labelCount))<(math.sqrt(2)/self.e)):
             plularity=self.getPlularity(parent_examples,parent_labels)
             node = DecisionNode(parent,{},True,None,plularity,0.0)
