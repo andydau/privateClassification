@@ -1,0 +1,43 @@
+@relation Restaurant.symbolic
+@attribute Res {yes,no}
+@attribute Est {0,1,2,3}
+@attribute Type {burger,french,italian,thai}
+@attribute wait {yes,no}
+
+@data
+yes,0,french,yes
+no,1,thai,no
+yes,2,burger,yes
+yes,3,italian,yes
+yes,0,french,no
+yes,1,italian,yes
+no,2,burger,no
+yes,3,thai,yes
+yes,0,burger,no
+no,1,italian,no
+no,2,thai,no
+yes,3,burger,yes
+no,0,french,no
+yes,1,thai,yes
+no,1,burger,no
+yes,3,thai,yes
+no,0,italian,no
+yes,1,french,yes
+yes,0,burger,yes
+no,3,thai,no
+yes,0,burger,yes
+no,1,thai,no
+yes,2,burger,yes
+yes,2,thai,yes
+no,3,french,no
+no,1,italian,no
+yes,0,burger,yes
+yes,3,thai,yes
+no,0,french,no
+no,3,italian,no
+yes,2,burger,yes
+no,3,burger,no
+yes,0,thai,yes
+yes,1,thai,yes
+yes,2,burger,yes
+yes,1,italian,yes

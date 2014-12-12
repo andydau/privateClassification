@@ -17,14 +17,14 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
     (not to raw data such as that produced by the loadXXX functions in samples.py).
     '''
 
-    def __init__(self, legalLabels, max_depth=30):  # feel free to change default max_depth
+    def __init__(self, legalLabels, max_depth=5):  # feel free to change default max_depth
         self.legalLabels = legalLabels
         self.depth = max_depth 
         self.root = None       # training should replace this with root of decision tree!
         "*** YOUR CODE HERE ***"
         self.allLabels = []
         self.values = {}
-        self.budget = 30
+        self.budget = 10
         self.e = float(self.budget)/(2*(self.depth+1))
 
     def getNoisy(self, count):
@@ -49,7 +49,7 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
         for label in trainingLabels:
             counter[label]+=1
         self.allLabels = counter.sortedKeys()
-        root = self.learn(trainingData,trainingLabels,features,None,None,None)
+        root = self.learn(trainingData,trainingLabels,features,None,None,None,0)
         self.root = root
 
     def getPlularity(self,examples,exampleLabels):
@@ -74,6 +74,7 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
     def sampleExp(self,examples,features,labels):
         qvalues = []
         for feature in features:
+            #pdb.set_trace()
             counter = util.Counter()
             for i in range(len(examples)):
                 counter[examples[i][feature]]+=1
@@ -90,17 +91,20 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
                     temp *= temp
                     tempEntropy += temp
                 tempEntropy = 1 - tempEntropy
-                gini += float(counter[key1])/len(examples)*tempEntropy
-            gini = (-1)*gini/2
+                gini += float(counter[key1])*tempEntropy
+            gini = (-1)*gini/4
             qvalue = math.exp(self.e*gini)
             qvalues.append(qvalue)
         sumQ = sum(qvalues)
+        #pdb.set_trace()
         for i in range(len(qvalues)):
-            qvalues[i] = qvalues[i]/sumQ
-        #print qvalues;
+            if (sumQ!=0):
+                qvalues[i] = qvalues[i]/sumQ
+            else:
+                qvalues[i] = 1/float(len(qvalues))
         return self.weighted_values(features,qvalues)
 
-    def learn(self, examples,labels, features, parent_examples,parent_labels, parent):
+    def learn(self, examples,labels, features, parent_examples,parent_labels, parent,depth):
         count = self.getNoisy(len(examples))
         maxF = 0
         for feature in features:
@@ -115,10 +119,9 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
         labelCounter = util.Counter()
         for label in labels:
             labelCounter[label]+=1
-        #pdb.set_trace()
         labelCount = len(labelCounter.sortedKeys())
         if (not examples) or (not features) or ((count/(maxF*labelCount))<(math.sqrt(2)/self.e)):
-            plularity=self.getPlularity(parent_examples,parent_labels)
+            plularity = self.getPlularity(parent_examples,parent_labels)
             node = DecisionNode(parent,{},True,None,plularity,0.0)
             return node
         else:
@@ -133,7 +136,7 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
                     if examples[i][splitFeature]==value:
                         nextExamples.append(examples[i])
                         nextLabels.append(labels[i])
-                node.child[value]= self.learn(nextExamples,nextLabels,newFeatures,examples,labels,node)
+                node.child[value]= self.learn(nextExamples,nextLabels,newFeatures,examples,labels,node,depth+1)
             return node
 
 
