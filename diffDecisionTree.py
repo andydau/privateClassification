@@ -17,7 +17,7 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
     (not to raw data such as that produced by the loadXXX functions in samples.py).
     '''
 
-    def __init__(self, legalLabels, max_depth=5):  # feel free to change default max_depth
+    def __init__(self, legalLabels, max_depth=2):  # feel free to change default max_depth
         self.legalLabels = legalLabels
         self.depth = max_depth 
         self.root = None       # training should replace this with root of decision tree!
@@ -120,7 +120,7 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
         for label in labels:
             labelCounter[label]+=1
         labelCount = len(labelCounter.sortedKeys())
-        if (not examples) or (not features) or ((count/(maxF*labelCount))<(math.sqrt(2)/self.e)):
+        if (not examples) or (not features) or ((count/(maxF*labelCount))<(math.sqrt(2)/self.e)) or (depth>=self.depth):
             plularity = self.getPlularity(parent_examples,parent_labels)
             node = DecisionNode(parent,{},True,None,plularity,0.0)
             return node
