@@ -17,14 +17,14 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
     (not to raw data such as that produced by the loadXXX functions in samples.py).
     '''
 
-    def __init__(self, legalLabels, max_depth=2):  # feel free to change default max_depth
+    def __init__(self, legalLabels, max_depth=10):  # feel free to change default max_depth
         self.legalLabels = legalLabels
         self.depth = max_depth 
         self.root = None       # training should replace this with root of decision tree!
         "*** YOUR CODE HERE ***"
         self.allLabels = []
         self.values = {}
-        self.budget = 10
+        self.budget = 20
         self.e = float(self.budget)/(2*(self.depth+1))
 
     def getNoisy(self, count):
@@ -93,15 +93,20 @@ class DiffDecisionTreeClassifer(classificationMethod.ClassificationMethod):
                 tempEntropy = 1 - tempEntropy
                 gini += float(counter[key1])*tempEntropy
             gini = (-1)*gini/4
-            qvalue = math.exp(self.e*gini)
-            qvalues.append(qvalue)
+            #qvalue = math.exp(self.e*gini)
+            qvalues.append(gini)
+        minGini = min(qvalues)
+        #print qvalues,minGini
+        for i in range(len(qvalues)):
+            qvalues[i] = qvalues[i]-minGini
+            qvalues[i] = math.exp(self.e*qvalues[i])
         sumQ = sum(qvalues)
         #pdb.set_trace()
         for i in range(len(qvalues)):
-            if (sumQ!=0):
-                qvalues[i] = qvalues[i]/sumQ
-            else:
-                qvalues[i] = 1/float(len(qvalues))
+            #if (sumQ!=0):
+            qvalues[i] = qvalues[i]/sumQ
+            #else:
+                #qvalues[i] = 1/float(len(qvalues))
         return self.weighted_values(features,qvalues)
 
     def learn(self, examples,labels, features, parent_examples,parent_labels, parent,depth):
